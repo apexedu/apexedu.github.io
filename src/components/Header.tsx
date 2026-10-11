@@ -50,12 +50,12 @@ export default function Header({ name, phone }: { name: string; phone?: string }
   return (
     <header className={`sticky top-0 z-40 transition-all duration-300 ${scrolled ? "bg-white/90 shadow-[0_8px_30px_-12px_rgba(7,50,63,0.35)] backdrop-blur-xl" : "bg-white max-sm:border-b max-sm:border-slate-100"}`}>
       <span ref={bar} className="absolute inset-x-0 top-0 h-[3px] origin-left scale-x-0 bg-gradient-to-r from-saffron via-sky to-leaf" aria-hidden="true" />
-      <div className={`mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 transition-all duration-300 sm:gap-4 sm:px-6 ${scrolled ? "h-14 sm:h-[4.5rem]" : "h-14 sm:h-[5.5rem]"}`}>
-        <a href="#top" aria-label={name} className="flex shrink-0 items-center gap-1">
-          <Logo name={name} className={`w-auto transition-all duration-300 ${scrolled ? "h-10 sm:h-[4.5rem]" : "h-10 sm:h-[5.5rem]"}`} />
-          <span className="hidden leading-none min-[420px]:block lg:hidden xl:block">
-            <span className="block text-lg font-extrabold tracking-tight text-brand-900 sm:text-2xl">{first}</span>
-            {rest && <span className="mt-0.5 block text-xs font-bold tracking-wide text-leaf sm:text-base">{rest}</span>}
+      <div className={`mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 transition-all duration-300 sm:gap-4 sm:px-6 ${scrolled ? "h-[3.25rem] sm:h-[4.5rem]" : "h-16 sm:h-[5.5rem]"}`}>
+        <a href="#top" aria-label={name} className="flex min-w-0 shrink items-center gap-1.5 sm:shrink-0 sm:gap-1">
+          <Logo name={name} className={`w-auto shrink-0 transition-all duration-300 ${scrolled ? "h-11 sm:h-[4.5rem]" : "h-[3.25rem] sm:h-[5.5rem]"}`} />
+          <span className="min-w-0 leading-none lg:hidden xl:block">
+            <span className="block truncate text-[1.05rem] font-extrabold tracking-tight text-brand-900 sm:text-2xl">{first}</span>
+            {rest && <span className="mt-0.5 block truncate text-[0.72rem] font-bold tracking-wide text-leaf sm:text-base">{rest}</span>}
           </span>
         </a>
 
