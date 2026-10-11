@@ -34,17 +34,17 @@ export const groups: CrudConfig = {
 
 export const teachers: CrudConfig = {
   ...base, sheet: "Teachers", required: ['full_name'], title: "O'qituvchilar", singular: "O'qituvchi",
-  hint: "Rasm brauzerda avtomatik siqiladi va Google Drive'ga yuklanadi.",
+  hint: "Rasm brauzerda tik to'rtburchak (4:5) shaklda qirqilib, siqiladi va Google Drive'ga yuklanadi. Saytda karta ochilganda \"Batafsil ma'lumot\" ko'rinadi.",
   columns: [
-    { key: "photo_url", label: "Rasm", render: (r) => r.photo_url ? <img src={photoPreview(r.photo_url)} alt="" referrerPolicy="no-referrer" className="h-10 w-10 rounded-full bg-slate-100 object-cover" /> : <span className="text-slate-400">—</span> },
+    { key: "photo_url", label: "Rasm", render: (r) => r.photo_url ? <img src={photoPreview(r.photo_url)} alt="" referrerPolicy="no-referrer" className="h-14 w-11 rounded-md bg-slate-100 object-cover object-top" /> : <span className="text-slate-400">—</span> },
     { key: "full_name", label: "F.I.Sh." },
-    { key: "position", label: "Lavozimi" },
+    { key: "position", label: "Qisqa izoh" },
   ],
   fields: [
     { key: "photo_url", label: "Rasm", type: "photo" },
     { key: "full_name", label: "F.I.Sh.", type: "text" },
-    { key: "position", label: "Lavozimi / mutaxassisligi", type: "text" },
-    { key: "bio", label: "Qisqa tarjimai hol", type: "textarea" },
+    { key: "position", label: "Qisqa izoh (rasm tagida ko'rinadi)", type: "text", hint: "Masalan: Turk tili o'qituvchisi" },
+    { key: "bio", label: "Batafsil ma'lumot", type: "textarea", hint: "\"Batafsil\" tugmasi bosilganda kartada ochiladi. Bo'sh qoldirsangiz, tugma ko'rinmaydi. Yangi qator ham saqlanadi." },
     { key: "active", label: "Saytda ko'rinadi", type: "bool" },
   ],
 };
