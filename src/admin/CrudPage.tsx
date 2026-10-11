@@ -36,14 +36,18 @@ export const photoPreview = (url: string) => {
   return /^(https?:|data:)/.test(url) ? url : `../assets/teachers/${url.replace(/^\.?\/?(assets\/teachers\/)?/, "")}`;
 };
 
-// Brauzerda kvadratga qirqib, 800x800 gacha siqadi (JPEG)
+// Brauzerda tik to'rtburchakka (4:5) qirqib, eni 800px gacha siqadi (JPEG). Saytdagi o'qituvchi kartasi ham 4:5.
 async function compress(file: File): Promise<{ mime: string; data: string }> {
   const bmp = await createImageBitmap(file);
-  const side = Math.min(bmp.width, bmp.height);
-  const out = Math.min(side, 800);
+  const cw = Math.min(bmp.width, bmp.height * 0.8); // qirqiladigan joyning eni (4:5)
+  const ch = cw * 1.25;
+  const outW = Math.min(Math.round(cw), 800);
+  const outH = Math.round(outW * 1.25);
   const cv = document.createElement("canvas");
-  cv.width = cv.height = out;
-  cv.getContext("2d")!.drawImage(bmp, (bmp.width - side) / 2, (bmp.height - side) / 2, side, side, 0, 0, out, out);
+  cv.width = outW;
+  cv.height = outH;
+  // Gorizontal — markazdan; vertikal — yuqoriroqdan (yuzlar odatda yuqorida bo'ladi)
+  cv.getContext("2d")!.drawImage(bmp, (bmp.width - cw) / 2, (bmp.height - ch) * 0.2, cw, ch, 0, 0, outW, outH);
   const blob: Blob = await new Promise((res, rej) => cv.toBlob((b) => (b ? res(b) : rej(new Error("invalid_file"))), "image/jpeg", 0.82));
   const buf = new Uint8Array(await blob.arrayBuffer());
   let bin = "";
@@ -69,14 +73,14 @@ function PhotoField({ value, onChange }: { value: string; onChange: (v: string) 
     }
   }
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-wrap items-center gap-4">
       {value ? (
-        <img src={photoPreview(value)} alt="" referrerPolicy="no-referrer" className="h-20 w-20 rounded-full bg-slate-100 object-cover" />
+        <img src={photoPreview(value)} alt="" referrerPolicy="no-referrer" className="h-28 w-[5.6rem] rounded-xl bg-slate-100 object-cover object-top" />
       ) : (
-        <div className="h-20 w-20 rounded-full bg-slate-100" />
+        <div className="h-28 w-[5.6rem] rounded-xl bg-slate-100" />
       )}
-      <div className="space-y-1 text-sm">
-        <input type="file" accept="image/*" disabled={busy} onChange={(e) => pick(e.target.files?.[0])} />
+      <div className="min-w-0 space-y-1 text-sm">
+        <input type="file" className="max-w-full" accept="image/*" disabled={busy} onChange={(e) => pick(e.target.files?.[0])} />
         {busy && <p className="text-slate-500">Siqilib, Drive'ga yuklanmoqda...</p>}
         {err && <p className="text-red-700">{err}</p>}
         {value && !busy && <button type="button" className="text-red-700 underline" onClick={() => onChange("")}>Rasmni olib tashlash</button>}
@@ -182,7 +186,51 @@ export default function CrudPage({ cfg }: { cfg: CrudConfig }) {
       ) : rows.length === 0 ? (
         <p className={`${cardCls} text-slate-500`}>Hozircha yozuv yo'q.</p>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+        <>
+        {/* Telefon va kichik planshet: har bir yozuv alohida karta */}
+        <ul className="space-y-3 md:hidden">
+          {rows.map((r, i) => {
+            const photoCol = cfg.columns.find((c) => c.key === "photo_url");
+            const titleCol = cfg.columns.find((c) => ["name", "full_name", "title", "question"].includes(c.key)) ?? cfg.columns.find((c) => c !== photoCol) ?? cfg.columns[0];
+            const rest = cfg.columns.filter((c) => c !== photoCol && c !== titleCol);
+            const show = (c: ColDef) => (c.render ? c.render(r, refs) : String(r[c.key] ?? ""));
+            return (
+              <li key={r.id} className={`rounded-2xl border border-slate-200 p-4 ${r[cfg.activeKey] ? "bg-white" : "bg-slate-50 text-slate-500"} ${r._pending ? "opacity-60" : ""}`}>
+                <div className="flex items-center gap-3">
+                  {photoCol && <div className="shrink-0">{show(photoCol)}</div>}
+                  <p className="min-w-0 flex-1 break-words text-base font-semibold leading-snug">{show(titleCol)}</p>
+                </div>
+                {rest.length > 0 && (
+                  <dl className="mt-3 space-y-2 text-sm">
+                    {rest.map((c) => (
+                      <div key={c.key}>
+                        <dt className="text-xs text-slate-500">{c.label}</dt>
+                        <dd className="break-words">{show(c) || "—"}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
+                <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-3">
+                  <span className="text-sm text-slate-600">{cfg.activeLabel}</span>
+                  <Toggle checked={!!r[cfg.activeKey]} onChange={() => toggleActive(r)} label={cfg.activeLabel} />
+                </div>
+                <div className="mt-3 flex items-center gap-2">
+                  {cfg.ordered && (
+                    <>
+                      <button className={btnSmall} onClick={() => move(i, -1)} disabled={i === 0} aria-label="Yuqoriga">↑</button>
+                      <button className={btnSmall} onClick={() => move(i, 1)} disabled={i === rows.length - 1} aria-label="Pastga">↓</button>
+                    </>
+                  )}
+                  <div className="ml-auto flex gap-2">
+                    <button className={btnSmall} onClick={() => !r._pending && openForm(r)} disabled={!!r._pending}>Tahrirlash</button>
+                    <button className={btnDanger} onClick={() => remove(r)} disabled={!!r._pending}>O'chirish</button>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="hidden overflow-x-auto rounded-2xl border border-slate-200 bg-white md:block">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
               <tr>
@@ -216,6 +264,7 @@ export default function CrudPage({ cfg }: { cfg: CrudConfig }) {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       {editing && (
@@ -244,7 +293,7 @@ export default function CrudPage({ cfg }: { cfg: CrudConfig }) {
               </Field>
             ))}
             {formErr && <ErrorBox message={formErr} />}
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex flex-col-reverse gap-2 pt-2 min-[420px]:flex-row min-[420px]:justify-end sm:gap-3 [&>button]:min-[420px]:min-w-28">
               <button className={btnGhost} onClick={() => setEditing(null)}>Bekor qilish</button>
               <button className={btnPrimary} onClick={save}>Saqlash</button>
             </div>
