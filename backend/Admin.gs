@@ -4,7 +4,7 @@
 const ADMIN_SHEETS = {
   Courses: { prefix: 'c', fields: { name: 's80', description: 's500', order: 'n', active: 'b' }, required: ['name'] },
   Groups: { prefix: 'g', fields: { course_id: 'ref', name: 's60', description: 's300', schedule: 's100', order: 'n', active: 'b' }, required: ['course_id', 'name'] },
-  Teachers: { prefix: 't', fields: { full_name: 's100', position: 's120', bio: 's600', photo_url: 's300', order: 'n', active: 'b' }, required: ['full_name'] },
+  Teachers: { prefix: 't', fields: { full_name: 's100', position: 's120', bio: 's1500', photo_url: 's300', order: 'n', active: 'b' }, required: ['full_name'] },
   Formats: { prefix: 'f', fields: { name: 's60', description: 's300', order: 'n', active: 'b' }, required: ['name'] },
   Advantages: { prefix: 'a', fields: { title: 's100', text: 's300', order: 'n', active: 'b' }, required: ['title'] },
   Testimonials: { prefix: 'r', fields: { name: 's80', result: 's120', text: 's500', order: 'n', active: 'b' }, required: ['name', 'text'] },
