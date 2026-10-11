@@ -48,7 +48,7 @@ export default function Courses({ courses, groups, onApply }: Props) {
         onScroll={update}
         tabIndex={0}
         aria-label="Kurslar ro'yxati"
-        className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4 pb-6 pt-2 sm:-mx-6 sm:gap-6 sm:px-6 sm:pb-10"
+        className="no-scrollbar -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto scroll-smooth px-4 pb-6 pt-2 sm:-mx-6 sm:scroll-px-6 sm:gap-6 sm:px-6 sm:pb-10"
       >
         {courses.map((c, ci) => (
           <article key={c.id} className="group flex w-[86%] shrink-0 snap-start flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-500 hover:-translate-y-1.5 hover:border-brand-600/30 hover:shadow-2xl sm:w-[440px]">
